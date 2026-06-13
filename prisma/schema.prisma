@@ -15,6 +15,7 @@ model User {
   name      String?
   password  String
   clients   Client[]
+  projects  Project[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -50,6 +51,9 @@ model Project {
   clientId  String
   client    Client    @relation(fields: [clientId], references:[id])
   notes     String?
+
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
