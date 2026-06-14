@@ -103,7 +103,7 @@ export async function DELETE(
       );
     }
 
-    const project = await prisma.client.findUnique({
+    const project = await prisma.project.findUnique({
       where: {
         id: projectId,
       },
@@ -123,6 +123,6 @@ export async function DELETE(
     );
   } catch (error) {
     console.error(error);
-    NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
