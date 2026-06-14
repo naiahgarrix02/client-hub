@@ -7,97 +7,97 @@ datasource db {
   provider  = "postgresql"
 }
 
-//models
+// models
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String?
-  password  String
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
 
-  clients   Client[]
-  projects  Project[]
-   invoice   Invoice[] 
+  clients       Client[]
+  projects      Project[]
+  invoice       Invoice[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Client {
-  id        String    @id @default(cuid())
-  name      String    
-  email     String?
-  phone     String?
-  company   String?
-  notes     String?
+  id            String     @id @default(cuid())
+  name          String    
+  email         String?
+  phone         String?
+  company       String?
+  notes         String?
 
 
-  userId    String
-  user      User      @relation(fields:[userId], references:[id])
+  userId        String
+  user          User        @relation(fields:[userId], references:[id])
 
-  invoice   Invoice[]   
-  projects  Project[]
+  invoice       Invoice[]   
+  projects      Project[]
 
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Project {
-  id        String    @id @default(cuid())
-  name      String    
-  description String
-  status    String    @default("active")
+  id            String      @id @default(cuid())
+  name          String    
+  description   String
+  status        String      @default("active")
 
-  startDate DateTime 
-  endDate   DateTime? 
+  startDate     DateTime 
+  endDate       DateTime? 
 
-  clientId  String
-  client    Client    @relation(fields: [clientId], references:[id])
-  notes     String?
+  clientId      String
+  client        Client       @relation(fields: [clientId], references:[id])
+  notes         String?
 
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
 
-   invoice   Invoice[] 
+  invoice       Invoice[] 
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model Invoice {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   invoiceNumber String
-  issueDate     DateTime      @default(now())
+  issueDate     DateTime     @default(now())
 
   clientId      String
   
-  client        Client    @relation(fields: [clientId], references:[id])
+  client        Client       @relation(fields: [clientId], references:[id])
 
   projectId     String?
-  project       Project?   @relation(fields: [projectId], references:[id])
+  project       Project?     @relation(fields: [projectId], references:[id])
 
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
 
   dueDate       DateTime?
-  description   String  
+  description   String
   totalAmount   Float
-  status        String    @default("draft")
+  status        String       @default("draft")
 
   invoiceItem   InvoiceItem[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model InvoiceItem {
-  id          String @id @default(cuid())
-  description String
-  quantity    Int
-  rate        Float
-  amount      Float
+  id            String       @id @default(cuid())
+  description   String
+  quantity      Int
+  rate          Float
+  amount        Float
 
-  invoiceId   String
-  invoice     Invoice   @relation(fields:[invoiceId], references:[id])
+  invoiceId     String
+  invoice       Invoice      @relation(fields:[invoiceId], references:[id])
 }
