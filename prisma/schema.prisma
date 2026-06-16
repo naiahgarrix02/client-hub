@@ -99,5 +99,5 @@ model InvoiceItem {
   amount        Float
 
   invoiceId     String
-  invoice       Invoice      @relation(fields:[invoiceId], references:[id])
+  invoice       Invoice      @relation(fields:[invoiceId], references:[id], onDelete: Cascade)
 }

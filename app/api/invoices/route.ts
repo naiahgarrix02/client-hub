@@ -36,6 +36,8 @@ export async function POST(request: NextRequest) {
 
     const totalAmount  = items.reduce((acc: number, item: {quantity: number, rate: number}) => acc + (item.quantity * item.rate), 0);
 
+    const itemsWithAmount = items.map((item: {quantity: number; rate: number; description: string}) =>({...item, amount: item.quantity * item.rate}));
+
     const newInvoice = await prisma.invoice.create({
       data: {
         invoiceNumber: newInvoiceNumber,
@@ -47,16 +49,42 @@ export async function POST(request: NextRequest) {
         dueDate,
         totalAmount,
         invoiceItem: {
-          create: items
+          create: itemsWithAmount
         },
       },
+      include: {invoiceItem: true}
     });
 
+    return NextResponse.json(newInvoice, { status: 201 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
       { error: "InternaL Server Error" },
       { status: 500 },
     );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const result = await authenticateUser(request);
+  
+    if(!result) {
+      return NextResponse.json({ error: "Verification failed" }, { status: 401 });
+    }
+
+    const invoices = await prisma.invoice.findMany({
+      where: {
+        userId: result.toString()
+      }
+    })
+
+    return NextResponse.json(invoices, {status: 200})
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {error: "Internal Server Error"},
+      {status: 500}
+    )
   }
 }
