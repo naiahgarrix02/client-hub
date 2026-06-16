@@ -7,10 +7,7 @@ export async function proxy(request: NextRequest) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
     if (!cookie) {
-      return NextResponse.json(
-        { error: "User Authentication required" },
-        { status: 401 },
-      );
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     await jwtVerify(cookie.value, secret);
@@ -18,7 +15,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Verificaton failed" }, { status: 401 });
+    return NextResponse.redirect(new URL("/login", request.url))
   }
 }
 
