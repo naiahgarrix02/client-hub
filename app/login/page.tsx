@@ -12,7 +12,7 @@ export default function LoginPage() {
           <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} className="size-4" />
           </div>
-          Acme Inc.
+          Client Hub
         </a>
         <LoginForm />
       </div>
