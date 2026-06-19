@@ -10,6 +10,7 @@ import prisma from "@/lib/prisma"
 
 import data from "./data.json"
 import { redirect } from "next/navigation"
+import { RecentInvoicesTable } from "@/components/recent-invoices-table"
 
 export default async function Page() {
   const cookieStore = await cookies();
@@ -62,6 +63,19 @@ export default async function Page() {
 
   const totalRevenue = totalRevenueResult._sum.totalAmount ?? 0;
 
+  const recentInvoices = await prisma.invoice.findMany({
+    take: 5,
+    orderBy: {
+      createdAt: "desc"
+    },
+    where: {
+      userId: userId
+    },
+    include: {
+      client: true
+    }
+  })
+
   return (
     <SidebarProvider
       style={
@@ -77,7 +91,12 @@ export default async function Page() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards totalRevenue={totalRevenue} totalClients={totalClients} unpaidInvoices={unpaidInvoices} activeProjects={activeProjects} />
+              <SectionCards
+                totalRevenue={totalRevenue}
+                totalClients={totalClients}
+                unpaidInvoices={unpaidInvoices}
+                activeProjects={activeProjects}
+              />
               <div className="px-4 lg:px-6">
                 <ChartAreaInteractive />
               </div>
@@ -87,5 +106,5 @@ export default async function Page() {
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

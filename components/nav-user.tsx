@@ -24,6 +24,7 @@ import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, Lo
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
+
 export function NavUser({
   user,
 }: {
