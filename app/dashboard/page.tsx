@@ -1,6 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
-import { DataTable } from "@/components/data-table"
 import { SectionCards } from "@/components/section-cards"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
@@ -8,7 +7,7 @@ import { cookies } from "next/headers"
 import { jwtVerify } from "jose"
 import prisma from "@/lib/prisma"
 
-import data from "./data.json"
+
 import { redirect } from "next/navigation"
 import { RecentInvoicesTable } from "@/components/recent-invoices-table"
 
@@ -27,6 +26,7 @@ export default async function Page() {
 
   if(typeof rawId !== "string") {
     redirect('/login');
+    return
   }
 
   const userId = rawId
@@ -61,6 +61,20 @@ export default async function Page() {
     },
   });
 
+  const userDetails = await prisma.user.findUnique({
+    where: {
+      id: userId
+    }, select: {
+      name: true,
+      email: true
+    }
+  })
+
+  if(!userDetails) {
+    redirect('/login');
+    return;
+  }
+
   const totalRevenue = totalRevenueResult._sum.totalAmount ?? 0;
 
   const recentInvoices = await prisma.invoice.findMany({
@@ -85,7 +99,7 @@ export default async function Page() {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar user={{ name: userDetails.name ?? "User", email: userDetails.email ?? "" }} variant="inset" />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">
@@ -100,7 +114,7 @@ export default async function Page() {
               <div className="px-4 lg:px-6">
                 <ChartAreaInteractive />
               </div>
-              <DataTable data={data} />
+              <RecentInvoicesTable invoices={recentInvoices} />
             </div>
           </div>
         </div>
