@@ -26,3 +26,4 @@ export async function authenticateUser(request: NextRequest) {
     return null;
   }
 }
+

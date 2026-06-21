@@ -32,7 +32,7 @@ export function SectionCards({
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Customers</CardDescription>
+          <CardDescription>Total Clients</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {totalClients}
           </CardTitle>

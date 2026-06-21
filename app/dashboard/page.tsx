@@ -3,33 +3,15 @@ import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { SectionCards } from "@/components/section-cards"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { cookies } from "next/headers"
-import { jwtVerify } from "jose"
 import prisma from "@/lib/prisma"
 
 
 import { redirect } from "next/navigation"
 import { RecentInvoicesTable } from "@/components/recent-invoices-table"
+import { getAuthenticatedUserId } from "@/lib/auth"
 
 export default async function Page() {
-  const cookieStore = await cookies();
-  const cookie = cookieStore.get("auth_token");
-  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-
-  if(!cookie) {
-    redirect('/login')
-  }
-
-  const userVerificaiton = await jwtVerify(cookie.value, secret);
-
-  const rawId = userVerificaiton.payload.id;
-
-  if(typeof rawId !== "string") {
-    redirect('/login');
-    return
-  }
-
-  const userId = rawId
+  const userId = await getAuthenticatedUserId();
 
   const totalClients = await prisma.client.count({
     where: {
