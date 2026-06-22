@@ -21,10 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -99,7 +96,7 @@ export function ClientList({client}: Clients) {
             setCompany("");
             setNotes("");
 
-            
+
           } else {
             setErrorMessage(data.error);
           }
