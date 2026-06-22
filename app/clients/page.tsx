@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getAuthenticatedUserId } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { ClientList } from "@/components/clients-list";
 
 export default async function Page() {
     const userId = await getAuthenticatedUserId();
@@ -21,6 +22,15 @@ export default async function Page() {
       redirect("/login");
       return;
     }
+
+    const clients = await prisma.client.findMany({
+      where: {
+        userId: userId
+      }, orderBy: {
+        createdAt: "desc"
+      }
+    })
+
     return(
     <SidebarProvider
           style={
@@ -35,12 +45,8 @@ export default async function Page() {
             <SiteHeader title="Clients" />
             <div className="flex flex-1 flex-col">
               <div className="@container/main flex flex-1 flex-col gap-2">
-                <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                  
-                  <div className="px-4 lg:px-6">
-                    
-                  </div>
-                 
+                <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 pl-8">
+                  <ClientList client={clients} />
                 </div>
               </div>
             </div>
