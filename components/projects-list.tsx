@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Trash, Edit } from "lucide-react";
+import Dropdown from "./dropdown";
 
 import {
   Table,
@@ -28,52 +29,55 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 
-
-
-type Clients = {
+type Projects = {
+  project: {
+    id: string;
     client: {
-        id: string,
-        name: string,
-        email: string | null,
-        phone: string | null,
-        company: string | null,
-        notes: string | null
-    }[],
-}
+      name: string;
+    };
+    name: string;
+    description: string;
+    status: string;
+    startDate: Date;
+    endDate: Date | null;
+  }[];
+  clients: {
+    id: string;
+    name: string;
+  }[];
+};
 
-export function ClientList({client}: Clients) {
+export function ProjectList({project, clients}: Projects ) {
+  console.log(clients)
     const [open, setIsOpen] = useState(false);
     const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [company, setCompany] = useState("");
-    const [notes, setNotes] = useState("");
+    const [description, setDescription] = useState("");
+    const [status, setStatus] = useState("");
+    const [clientId, setClientId] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [selectedProject, setSelectedProject] = useState<
+            Projects["project"][0] | null
+          >(null);
     const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
-    const [selectedClient, setSelectedClient] = useState<
-        Clients["client"][0] | null
-      >(null);
-
-    const clientData = client.map((clients) => (
-      <TableRow key={clients.id}>
-        <TableCell className="p-5">{clients.name}</TableCell>
+    
+    const projectData = project.map((projects) => (
+      <TableRow key={projects.id}>
+        <TableCell className="p-5">{projects.name}</TableCell>
+        <TableCell className="p-5">{projects.description}</TableCell>
+        <TableCell className="p-5">{projects.status}</TableCell>
         <TableCell className="p-5">
-          {clients.email ?? "N/A"}
+          {new Date(projects.startDate).toLocaleDateString()}
         </TableCell>
         <TableCell className="p-5">
-          {clients.phone ?? "N/A"}
+          {new Date(projects.endDate ?? "").toLocaleDateString()}
         </TableCell>
         <TableCell className="p-5">
-          {clients.company ?? "N/A"}
-        </TableCell>
-        <TableCell className="p-5">
-          {clients.notes ?? "N/A"}
-        </TableCell>
-        <TableCell className="p-5">
-          <Button onClick={() => handleDelete(clients.id)} className="mr-2">
+          <Button onClick={() => handleDelete(projects.id)} className="mr-2">
             <Trash />
           </Button>
-          <Button onClick={() => handleEdit(clients)}>
+          <Button onClick={() => handleEdit(projects)}>
             <Edit />
           </Button>
         </TableCell>
@@ -82,17 +86,18 @@ export function ClientList({client}: Clients) {
 
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
-      if (!name) {
+
+      if (!name || !description || !status || !startDate) {
         setErrorMessage("Missing Required Fields");
         return;
       }
 
-      fetch("/api/clients", {
+      fetch("/api/projects", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, phone, company, notes }),
+        body: JSON.stringify({ name, description, status, clientId, startDate, endDate }),
       })
         .then((response) =>
           response.json().then((data) => ({ ok: response.ok, data })),
@@ -103,11 +108,11 @@ export function ClientList({client}: Clients) {
             setIsOpen(false);
 
             setName("");
-            setEmail("");
-            setPhone("");
-            setCompany("");
-            setNotes("");
-
+            setDescription("");
+            setStatus("");
+            setClientId("");
+            setStartDate("");
+            setEndDate("");
 
           } else {
             setErrorMessage(data.error);
@@ -115,9 +120,8 @@ export function ClientList({client}: Clients) {
         });
     };
 
-    const handleDelete = (clientId: string) => {
-    
-      fetch(`/api/clients/${clientId}`, {
+    const handleDelete = (projectId: string) => {
+      fetch(`/api/projects/${projectId}`, {
         method: "DELETE",
       })
         .then((response) =>
@@ -132,45 +136,42 @@ export function ClientList({client}: Clients) {
         });
     };
 
-    
+    const handleEdit = (project: Projects["project"][0]) => {
+      setSelectedProject(project);
 
-    const handleEdit = (client: Clients["client"][0]) => {
-      setSelectedClient(client);
+      setName(project.name);
+      setDescription(project.description ?? "");
+      setStatus(project.status);
+      setClientId(project.client.name)
+      setStartDate(project.startDate.toISOString().split("T")[0]);
+      setEndDate(
+        project.endDate ? project.endDate.toISOString().split("T")[0] : "",
+      );
 
-      setName(client.name);
-      setEmail(client.email ?? "");
-      setPhone(client.phone ?? "");
-      setCompany(client.company ?? "");
-      setNotes(client.notes ?? "");
-      
       setIsOpen(true);
     };
 
     const handleUpdate = () => {
-  
-      if(!selectedClient){
-        setErrorMessage("Client not found");
+      if (!selectedProject) {
+        setErrorMessage("Project not found");
         return;
       }
 
-      fetch(`/api/clients/${selectedClient.id}`, {
+      fetch(`/api/projects/${selectedProject.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, phone, company, notes }),
+        body: JSON.stringify({ name, description, status, clientId ,startDate, endDate }),
       })
         .then((response) =>
           response.json().then((data) => ({ ok: response.ok, data })),
         )
         .then(({ ok, data }) => {
-
           if (ok) {
-
             router.refresh();
-            // setIsOpen(false);
-            setSelectedClient(null);
-
+            setIsOpen(false);
+            setSelectedProject(null);
           } else {
             setErrorMessage(data.error);
           }
@@ -184,40 +185,40 @@ export function ClientList({client}: Clients) {
           onOpenChange={(isOpen) => {
             setIsOpen(isOpen);
             if (!isOpen) {
-              setSelectedClient(null);
+              setSelectedProject(null);
               setName("");
-              setEmail("");
-              setPhone("");
-              setCompany("");
-              setNotes("");
+              setDescription("");
+              setStatus("");
+              setStartDate("");
+              setEndDate("");
               setErrorMessage("");
             }
           }}
         >
           <DialogTrigger asChild>
-            <Button>Add New Client</Button>
+            <Button>Add New Project</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader className="text-center">
               <DialogTitle>
-                {selectedClient ? "Edit Client" : "Add Client"}
+                {selectedProject ? "Edit Project" : "Add Project"}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={selectedClient ? handleUpdate : handleSubmit}>
+            <form onSubmit={selectedProject ? handleUpdate : handleSubmit}>
               <FieldGroup>
                 <div className="flex flex-col items-center gap-1 text-center">
                   <p className="text-sm text-balance text-muted-foreground">
-                    {selectedClient
+                    {selectedProject
                       ? "Fill in the form below to edit a client"
                       : "Fill in the form below to add a client"}
                   </p>
                 </div>
                 <Field>
-                  <FieldLabel htmlFor="name">Full Name</FieldLabel>
+                  <FieldLabel htmlFor="name">Project Name</FieldLabel>
                   <Input
                     id="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Project-1"
                     required
                     className="bg-background"
                     value={name}
@@ -225,48 +226,51 @@ export function ClientList({client}: Clients) {
                   />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="email">Email</FieldLabel>
+                  <FieldLabel htmlFor="description">Description</FieldLabel>
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    className="bg-background"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="phone">Phone</FieldLabel>
-                  <Input
-                    id="phone"
+                    id="description"
                     type="text"
+                    placeholder="Some text describing the project"
                     required
                     className="bg-background"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="company">Company</FieldLabel>
+                  <FieldLabel htmlFor="startDate">Status</FieldLabel>
+                  <Dropdown
+                    options={["Pending", "Active", "Completed"]}
+                    onSelect={(value) => setStatus(value)}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="startDate">Client</FieldLabel>
+                  <Dropdown
+                    options={clients}
+                    onSelect={(value) => setClientId(value)}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="startDate">Start date</FieldLabel>
                   <Input
                     id="company"
-                    type="text"
+                    type="date"
                     required
                     className="bg-background"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
                   />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="phone">Notes</FieldLabel>
+                  <FieldLabel htmlFor="endDate">End Date</FieldLabel>
                   <Input
                     id="notes"
-                    type="text"
+                    type="date"
                     required
                     className="bg-background"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
                   />
                   {errorMessage && (
                     <FieldDescription className="text-red-700 text-center font-medium text-[14px] border border-red-500 bg-red-200 p-2 rounded-lg">
@@ -276,7 +280,7 @@ export function ClientList({client}: Clients) {
                 </Field>
                 <Field>
                   <Button type="submit">
-                    {selectedClient ? "Save Changes" : "Create Client"}
+                    {selectedProject ? "Save Changes" : "Create Project"}
                   </Button>
                 </Field>
                 <Field></Field>
@@ -288,14 +292,15 @@ export function ClientList({client}: Clients) {
           <TableHeader>
             <TableRow>
               <TableHead className="p-5">Name</TableHead>
-              <TableHead className="p-5">E-mail</TableHead>
-              <TableHead className="p-5">Phone</TableHead>
-              <TableHead className="p-5">Company</TableHead>
-              <TableHead className="p-5">Notes</TableHead>
+              <TableHead className="p-5">Description</TableHead>
+              <TableHead className="p-5">Status</TableHead>
+              <TableHead className="p-5">Client</TableHead>
+              <TableHead className="p-5">Start Date</TableHead>
+              <TableHead className="p-5">End Date</TableHead>
               <TableHead className="p-5">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>{clientData}</TableBody>
+          <TableBody>{projectData}</TableBody>
         </Table>
       </div>
     );
