@@ -47,7 +47,7 @@ model Project {
   id            String      @id @default(cuid())
   name          String    
   description   String
-  status        String      @default("active")
+  status        String      @default("Pending")
 
   startDate     DateTime 
   endDate       DateTime? 

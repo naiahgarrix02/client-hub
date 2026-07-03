@@ -72,7 +72,9 @@ export async function PATCH(
 
     const body = await request.json();
     const updatedProject = await prisma.project.update({
-      data: body,
+      data: {
+        ...body, startDate: body.startDate ? new Date(body.startDate) : undefined,
+        endDate: body.endDate ? new Date(body.endDate) : undefined},
       where: {
         id: projectId,
       },

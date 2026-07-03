@@ -41,8 +41,6 @@ export default async function Page() {
       userId: true,
     },
   });
-  console.log("ALL CLIENTS:", clients);
-  console.log("CURRENT USER:", userId);
 
   return (
     <SidebarProvider

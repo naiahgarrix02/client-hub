@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Trash, Edit } from "lucide-react";
-import Dropdown from "./dropdown";
+import Dropdown, { DropdownItem } from "./dropdown";
 
 import {
   Table,
@@ -29,10 +29,20 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 
+
+const statusOptions = [
+  {name:"Pending"},
+  {name:"Active"},
+  {name:"Completed"},
+  
+]
+
+
 type Projects = {
   project: {
     id: string;
     client: {
+      id: string
       name: string;
     };
     name: string;
@@ -52,7 +62,7 @@ export function ProjectList({project, clients}: Projects ) {
     const [open, setIsOpen] = useState(false);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState("Pending");
     const [clientId, setClientId] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -67,6 +77,7 @@ export function ProjectList({project, clients}: Projects ) {
         <TableCell className="p-5">{projects.name}</TableCell>
         <TableCell className="p-5">{projects.description}</TableCell>
         <TableCell className="p-5">{projects.status}</TableCell>
+        <TableCell className="p-5">{projects.client.name}</TableCell>
         <TableCell className="p-5">
           {new Date(projects.startDate).toLocaleDateString()}
         </TableCell>
@@ -142,12 +153,13 @@ export function ProjectList({project, clients}: Projects ) {
       setName(project.name);
       setDescription(project.description ?? "");
       setStatus(project.status);
-      setClientId(project.client.name)
+      setClientId(project.client.id)
       setStartDate(project.startDate.toISOString().split("T")[0]);
       setEndDate(
         project.endDate ? project.endDate.toISOString().split("T")[0] : "",
       );
 
+      
       setIsOpen(true);
     };
 
@@ -238,18 +250,33 @@ export function ProjectList({project, clients}: Projects ) {
                   />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="startDate">Status</FieldLabel>
+                  <FieldLabel htmlFor="status">Status</FieldLabel>
                   <Dropdown
-                    options={["Pending", "Active", "Completed"]}
-                    onSelect={(value) => setStatus(value)}
-                  />
+                    key={selectedProject?.id ?? "create"}
+                    value={status}
+                    onValueChange={(val) => setStatus(String(val))}
+                    placeholder="Select status"
+                  >
+                    {statusOptions.map((stat) => (
+                      <DropdownItem key={stat.name} value={stat.name}>
+                        {stat.name}
+                      </DropdownItem>
+                    ))}
+                  </Dropdown>
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="startDate">Client</FieldLabel>
+                  <FieldLabel htmlFor="client">Client</FieldLabel>
                   <Dropdown
-                    options={clients}
-                    onSelect={(value) => setClientId(value)}
-                  />
+                    value={clientId}
+                    onValueChange={(val) => setClientId(String(val))}
+                    placeholder="Select Client"
+                  >
+                    {clients.map((client) => (
+                      <DropdownItem key={client.id} value={client.id}>
+                        {client.name}
+                      </DropdownItem>
+                    ))}
+                  </Dropdown>
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="startDate">Start date</FieldLabel>
