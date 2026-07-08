@@ -208,7 +208,7 @@ export function ProjectList({project, clients}: Projects ) {
           }}
         >
           <DialogTrigger asChild>
-            <Button>Add New Project</Button>
+            <Button className="mb-4">Add New Project</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader className="text-center">

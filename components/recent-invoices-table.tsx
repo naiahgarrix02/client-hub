@@ -9,6 +9,7 @@ type RecentInvoicesProps = {
     };
     dueDate: Date | null;
     status: string;
+    totalAmount: string;
   }[];
 };
 
@@ -29,6 +30,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesProps) {
             : "N/A"}
         </TableCell>
         <TableCell className="p-5">{invoice.status}</TableCell>
+        <TableCell className="p-5">{invoice.totalAmount}</TableCell>
       </TableRow>
     ));
     
@@ -41,6 +43,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoicesProps) {
             <TableHead className="p-5">Client Name</TableHead>
             <TableHead className="p-5">Due Date</TableHead>
             <TableHead className="p-5">Status</TableHead>
+            <TableHead className="p-5">Total Amount (GHS)</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>{invoiceData}</TableBody>

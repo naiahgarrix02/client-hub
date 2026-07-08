@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateUser } from "@/lib/utils";
+import { authenticateUser, calculateInvoiceTotals } from "@/lib/utils";
 
 
 export async function GET(
@@ -74,22 +74,39 @@ export async function PATCH(
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
 
+        if (invoice?.status === "Paid") {
+        return NextResponse.json({ error: "Conflict" }, { status: 409 });
+        }
+
         const body = await request.json();
 
-        const { status, dueDate, description } = body;
+        const { status, dueDate, description, items } = body;
 
-        const updatedInvoice = await prisma.invoice.update({
-          data: {
-            status,
-            dueDate,
-            description
-          },
-          where: {
-            id: invoiceId,
-          },
-        });
+        if (items) {
+          const { items: itemsWithAmount, totalAmount } =
+            calculateInvoiceTotals(items);
+          const updated = await prisma.invoice.update({
+            where: { id: invoiceId },
+            data: {
+              status,
+              dueDate,
+              description,
+              totalAmount,
+              invoiceItem: {
+                deleteMany: {},
+                createMany: { data: itemsWithAmount },
+              },
+            },
+          });
+          return NextResponse.json(updated, { status: 200 });
+        } else {
+          const updated = await prisma.invoice.update({
+            where: { id: invoiceId },
+            data: { status, dueDate, description },
+          });
+          return NextResponse.json(updated, { status: 200 });
+        }
 
-        return NextResponse.json(updatedInvoice, {status: 200})
     } catch (error) {
         console.log(error)
         return NextResponse.json(

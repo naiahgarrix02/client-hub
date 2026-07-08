@@ -22,14 +22,14 @@ export async function GET(request: NextRequest) {
       const activeProjects = await prisma.project.count({
         where: {
           userId: result.toString(),
-          status: "active",
+          status: "Active",
         },
       });
 
       const unpaidInvoices = await prisma.invoice.count({
         where: {
           userId: result.toString(),
-          status: { not: "paid" },
+          status: { not: "Paid" },
         },
       });
 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         },
         where: {
           userId: result.toString(),
-          status: "paid",
+          status: "Paid",
         },
       });
 

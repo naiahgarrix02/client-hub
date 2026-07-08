@@ -195,7 +195,7 @@ export function ClientList({client}: Clients) {
           }}
         >
           <DialogTrigger asChild>
-            <Button>Add New Client</Button>
+            <Button className="mb-4">Add New Client</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader className="text-center">

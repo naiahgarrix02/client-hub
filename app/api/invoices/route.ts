@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateUser } from "@/lib/utils";
+import { authenticateUser, calculateInvoiceTotals, InvoiceItemInput } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,9 +34,11 @@ export async function POST(request: NextRequest) {
 
     const newInvoiceNumber = "INV-" + invoiceNumber;
 
-    const totalAmount  = items.reduce((acc: number, item: {quantity: number, rate: number}) => acc + (item.quantity * item.rate), 0);
+    // const totalAmount  = items.reduce((acc: number, item: {quantity: number, rate: number}) => acc + (item.quantity * item.rate), 0);
+    const { items: itemsWithAmount, totalAmount: newTotalAmount }  = calculateInvoiceTotals(items)
+    
 
-    const itemsWithAmount = items.map((item: {quantity: number; rate: number; description: string}) =>({...item, amount: item.quantity * item.rate}));
+    // const itemsWithAmount = items.map((item: {quantity: number; rate: number; description: string}) =>({...item, amount: item.quantity * item.rate}));
 
     const newInvoice = await prisma.invoice.create({
       data: {
@@ -47,7 +49,7 @@ export async function POST(request: NextRequest) {
         description,
         issueDate,
         dueDate,
-        totalAmount,
+        totalAmount: newTotalAmount,
         invoiceItem: {
           create: itemsWithAmount
         },
@@ -76,6 +78,10 @@ export async function GET(request: NextRequest) {
     const invoices = await prisma.invoice.findMany({
       where: {
         userId: result.toString()
+      },
+      include: {
+        project: true,
+        client: true
       }
     })
 
