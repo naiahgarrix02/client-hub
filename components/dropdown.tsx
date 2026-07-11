@@ -20,7 +20,7 @@ export function DropdownItem({
   return (
     <div
       onClick={() => onSelect?.(value)}
-      className="flex cursor-pointer items-center justify-between px-4 py-2 text-sm hover:bg-gray-100"
+      className="flex cursor-pointer items-center justify-between px-4 py-2 text-sm hover:bg-gray-600"
     >
       <span>{children}</span>
 

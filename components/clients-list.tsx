@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Trash, Edit } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   Table,
@@ -83,7 +84,7 @@ export function ClientList({client}: Clients) {
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
       if (!name) {
-        setErrorMessage("Missing Required Fields");
+        toast.error("Missing Required Fields");
         return;
       }
 
@@ -101,6 +102,7 @@ export function ClientList({client}: Clients) {
           if (ok) {
             router.refresh();
             setIsOpen(false);
+            toast.success("Client has been created successfully!")
 
             setName("");
             setEmail("");
@@ -110,7 +112,7 @@ export function ClientList({client}: Clients) {
 
 
           } else {
-            setErrorMessage(data.error);
+            toast.error(data.error);
           }
         });
     };
@@ -126,8 +128,9 @@ export function ClientList({client}: Clients) {
         .then(({ ok, data }) => {
           if (ok) {
             router.refresh();
+            toast.success("Client has been deleted successfully")
           } else {
-            setErrorMessage(data.error);
+            toast.error(data.error);
           }
         });
     };
@@ -149,7 +152,7 @@ export function ClientList({client}: Clients) {
     const handleUpdate = () => {
   
       if(!selectedClient){
-        setErrorMessage("Client not found");
+        toast.error("Client not found");
         return;
       }
 
@@ -170,9 +173,10 @@ export function ClientList({client}: Clients) {
             router.refresh();
             // setIsOpen(false);
             setSelectedClient(null);
+            toast.success("Client has been updated successfully")
 
           } else {
-            setErrorMessage(data.error);
+            toast.error(data.error);
           }
         });
     };

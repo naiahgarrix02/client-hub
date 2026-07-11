@@ -26,51 +26,34 @@ const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: (
-        <LayoutDashboardIcon
-        />
-      ),
+      icon: <LayoutDashboardIcon />,
     },
     {
       title: "Clients",
       url: "/clients",
-      icon: (
-        <ListIcon
-        />
-      ),
+      icon: <ListIcon />,
+    },
+
+    {
+      title: "Projects",
+      url: "/projects",
+      icon: <FolderIcon />,
     },
     {
       title: "Invoices",
       url: "/invoices",
-      icon: (
-        <ChartBarIcon
-        />
-      ),
+      icon: <ChartBarIcon />,
     },
-    {
-      title: "Projects",
-      url: "/projects",
-      icon: (
-        <FolderIcon
-        />
-      ),
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
+    // {
+    //   title: "Team",
+    //   url: "#",
+    //   icon: <UsersIcon />,
+    // },
   ],
   navClouds: [
     {
       title: "Capture",
-      icon: (
-        <CameraIcon
-        />
-      ),
+      icon: <CameraIcon />,
       isActive: true,
       url: "#",
       items: [
@@ -86,10 +69,7 @@ const data = {
     },
     {
       title: "Proposal",
-      icon: (
-        <FileTextIcon
-        />
-      ),
+      icon: <FileTextIcon />,
       url: "#",
       items: [
         {
@@ -104,10 +84,7 @@ const data = {
     },
     {
       title: "Prompts",
-      icon: (
-        <FileTextIcon
-        />
-      ),
+      icon: <FileTextIcon />,
       url: "#",
       items: [
         {
@@ -125,29 +102,20 @@ const data = {
     {
       title: "Settings",
       url: "#",
-      icon: (
-        <Settings2Icon
-        />
-      ),
+      icon: <Settings2Icon />,
     },
     {
       title: "Get Help",
       url: "#",
-      icon: (
-        <CircleHelpIcon
-        />
-      ),
+      icon: <CircleHelpIcon />,
     },
     {
       title: "Search",
       url: "#",
-      icon: (
-        <SearchIcon
-        />
-      ),
+      icon: <SearchIcon />,
     },
   ],
-  }
+};
 
 export function AppSidebar({user, ...props }: {user: UserDetails} & React.ComponentProps<typeof Sidebar>) {
   return (

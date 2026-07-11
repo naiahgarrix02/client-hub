@@ -34,12 +34,8 @@ export async function POST(request: NextRequest) {
 
     const newInvoiceNumber = "INV-" + invoiceNumber;
 
-    // const totalAmount  = items.reduce((acc: number, item: {quantity: number, rate: number}) => acc + (item.quantity * item.rate), 0);
     const { items: itemsWithAmount, totalAmount: newTotalAmount }  = calculateInvoiceTotals(items)
     
-
-    // const itemsWithAmount = items.map((item: {quantity: number; rate: number; description: string}) =>({...item, amount: item.quantity * item.rate}));
-
     const newInvoice = await prisma.invoice.create({
       data: {
         invoiceNumber: newInvoiceNumber,

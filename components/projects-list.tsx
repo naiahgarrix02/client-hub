@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Trash, Edit } from "lucide-react";
 import Dropdown, { DropdownItem } from "./dropdown";
+import { toast } from "sonner";
 
 import {
   Table,
@@ -69,7 +70,6 @@ export function ProjectList({project, clients}: Projects ) {
     const [selectedProject, setSelectedProject] = useState<
             Projects["project"][0] | null
           >(null);
-    const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
     
     const projectData = project.map((projects) => (
@@ -99,7 +99,7 @@ export function ProjectList({project, clients}: Projects ) {
       event.preventDefault();
 
       if (!name || !description || !status || !startDate) {
-        setErrorMessage("Missing Required Fields");
+        toast.error("Missing Required Fields");
         return;
       }
 
@@ -125,8 +125,10 @@ export function ProjectList({project, clients}: Projects ) {
             setStartDate("");
             setEndDate("");
 
+            toast.success("Project has been successfully created!");
+
           } else {
-            setErrorMessage(data.error);
+            toast.error(data.error);
           }
         });
     };
@@ -141,8 +143,9 @@ export function ProjectList({project, clients}: Projects ) {
         .then(({ ok, data }) => {
           if (ok) {
             router.refresh();
+            toast.success("Project has been successfully deleted!");
           } else {
-            setErrorMessage(data.error);
+            toast.error(data.error);
           }
         });
     };
@@ -165,7 +168,7 @@ export function ProjectList({project, clients}: Projects ) {
 
     const handleUpdate = () => {
       if (!selectedProject) {
-        setErrorMessage("Project not found");
+        toast.error("Project not found");
         return;
       }
 
@@ -184,8 +187,10 @@ export function ProjectList({project, clients}: Projects ) {
             router.refresh();
             setIsOpen(false);
             setSelectedProject(null);
+            toast.success("Project has been updated successfully!");
+
           } else {
-            setErrorMessage(data.error);
+            toast.error(data.error);
           }
         });
     };
@@ -203,7 +208,6 @@ export function ProjectList({project, clients}: Projects ) {
               setStatus("");
               setStartDate("");
               setEndDate("");
-              setErrorMessage("");
             }
           }}
         >
@@ -281,7 +285,7 @@ export function ProjectList({project, clients}: Projects ) {
                 <Field>
                   <FieldLabel htmlFor="startDate">Start date</FieldLabel>
                   <Input
-                    id="company"
+                    id="startDate"
                     type="date"
                     required
                     className="bg-background"
@@ -292,18 +296,14 @@ export function ProjectList({project, clients}: Projects ) {
                 <Field>
                   <FieldLabel htmlFor="endDate">End Date</FieldLabel>
                   <Input
-                    id="notes"
+                    id="endDate"
                     type="date"
                     required
                     className="bg-background"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                   />
-                  {errorMessage && (
-                    <FieldDescription className="text-red-700 text-center font-medium text-[14px] border border-red-500 bg-red-200 p-2 rounded-lg">
-                      {errorMessage}
-                    </FieldDescription>
-                  )}
+                 
                 </Field>
                 <Field>
                   <Button type="submit">
