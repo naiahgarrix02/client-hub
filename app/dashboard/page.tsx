@@ -22,14 +22,14 @@ export default async function Page() {
   const activeProjects = await prisma.project.count({
     where: {
       userId: userId,
-      status: "active",
+      status: "Active",
     },
   });
 
   const unpaidInvoices = await prisma.invoice.count({
     where: {
       userId: userId,
-      status: { not: "paid" },
+      status: { not: "Paid" },
     },
   });
 
@@ -39,7 +39,7 @@ export default async function Page() {
     },
     where: {
       userId: userId,
-      status: "paid",
+      status: "Paid",
     },
   });
 
