@@ -89,7 +89,7 @@ export async function PATCH(
             where: { id: invoiceId },
             data: {
               status,
-              dueDate,
+              dueDate: new Date(dueDate),
               description,
               totalAmount,
               invoiceItem: {
@@ -102,7 +102,7 @@ export async function PATCH(
         } else {
           const updated = await prisma.invoice.update({
             where: { id: invoiceId },
-            data: { status, dueDate, description },
+            data: { status, dueDate: new Date(dueDate), description },
           });
           return NextResponse.json(updated, { status: 200 });
         }

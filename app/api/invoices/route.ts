@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { clientId, projectId, issueDate, dueDate, items, description } = body;
+    const { clientId, projectId, issueDate, dueDate, items, description, status } = body;
 
     const result = await authenticateUser(request);
     if (!result) {
@@ -43,8 +43,9 @@ export async function POST(request: NextRequest) {
         projectId,
         userId: result.toString(),
         description,
-        issueDate,
-        dueDate,
+        status,
+        issueDate: new Date(issueDate),
+        dueDate: new Date(dueDate),
         totalAmount: newTotalAmount,
         invoiceItem: {
           create: itemsWithAmount

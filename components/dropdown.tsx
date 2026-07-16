@@ -40,7 +40,7 @@ interface DropdownProps {
   value?: string | number;
   placeholder?: string;
   onValueChange?: (value: string | number) => void;
-  children: DropdownChild | DropdownChild[];
+  children: React.ReactNode;
 }
 
 export default function Dropdown({
