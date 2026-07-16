@@ -17,9 +17,9 @@ export function SignupForm({
 }: React.ComponentProps<"form">) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const[password, setPassword] = useState("");
-  const[confirmPassword, setConfirmPassword] = useState("");
-  const[errorMessage, setErrorMessage] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
   const handleSubmit = (event: React.FormEvent) => {
