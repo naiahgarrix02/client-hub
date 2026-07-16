@@ -9,7 +9,7 @@ type RecentInvoicesProps = {
     };
     dueDate: Date | null;
     status: string;
-    totalAmount: string;
+    totalAmount: number;
   }[];
 };
 
